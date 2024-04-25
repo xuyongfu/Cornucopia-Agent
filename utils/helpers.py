@@ -1,4 +1,5 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
+
 import glob
 import json
 import re
@@ -8,13 +9,14 @@ import config
 from functools import lru_cache
 from utils.send_llm import send_local_qwen_message
 from utils.send_llm import send_chatgpt_message
-from utils.send_llm import send_tongyiqwen_message
+from utils.send_llm import send_glm4_message
 
 send_llm_req = {
     "Qwen": send_local_qwen_message,
     "chatGPT": send_chatgpt_message,
-    "tongyiQwen":send_tongyiqwen_message
+    "GLM": send_glm4_message
 }
+
 
 def filename_to_classname(filename):
     """
@@ -58,7 +60,8 @@ def send_message(message, user_input):
     """
     请求LLM函数
     """
-    return send_llm_req.get(config.USE_MODEL, send_chatgpt_message)(message, user_input)
+    # 默认调用 GLM-4
+    return send_llm_req.get(config.USE_MODEL, send_glm4_message)(message, user_input)
 
 
 def is_slot_fully_filled(json_data):
@@ -104,7 +107,7 @@ def get_slot_query_user_json(slot):
     output_data = []
     for item in slot:
         if not item["value"]:
-            new_item = {"name": item["name"], "desc": item["desc"], "value":  item["value"]}
+            new_item = {"name": item["name"], "desc": item["desc"], "value": item["value"]}
             output_data.append(new_item)
     return output_data
 
@@ -173,4 +176,3 @@ def fix_json(bad_json):
     except json.JSONDecodeError:
         # 如果解析失败，打印错误信息，但不会崩溃
         print("给定的字符串不是有效的 JSON 格式。")
-

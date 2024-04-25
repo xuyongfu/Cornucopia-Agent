@@ -1,4 +1,5 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
+
 import logging
 
 from config import RELATED_INTENT_THRESHOLD
@@ -75,7 +76,7 @@ class ChatbotModel:
 
     def process_multi_question(self, user_input):
         """
-        处理多轮问答
+        处理多轮问答（主函数）
         :param user_input:
         :return:
         """
@@ -90,7 +91,7 @@ class ChatbotModel:
         if self.current_purpose in self.scene_templates:
             # 根据场景模板调用相应场景的处理逻辑
             self.get_processor_for_scene(self.current_purpose)
-            # 调用抽象类process方法
+            # 调用 CommonProcessor 类 process 方法开启多轮交互
             return self.processors[self.current_purpose].process(user_input, None)
         return '未命中场景'
 

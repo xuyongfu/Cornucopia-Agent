@@ -1,4 +1,5 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
+
 from config.log_config import setup_logging
 
 

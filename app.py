@@ -1,4 +1,5 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
+
 from models.chatbot_model import ChatbotModel
 from utils.app_init import before_init
 from utils.helpers import load_all_scene_configs
