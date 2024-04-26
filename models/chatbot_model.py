@@ -27,6 +27,7 @@ class ChatbotModel:
         """
         if not self.current_purpose:
             return False
+        # todo: 此处prompt版意图识别待优化
         prompt = f"判断当前用户输入内容与当前对话场景的关联性:\n\n当前对话场景: {self.scene_templates[self.current_purpose]['description']}\n当前用户输入: {user_input}\n\n这两次输入是否关联（仅用小数回答关联度，得分范围0.0至1.0）"
         result = send_message(prompt, None)
         return extract_float(result) > RELATED_INTENT_THRESHOLD
@@ -51,15 +52,16 @@ class ChatbotModel:
 
         user_choices = extract_continuous_digits(user_choice)
 
-        # 根据用户选择获取对应场景
+        # 根据当前轮用户选择获取对应场景
         if user_choices and user_choices[0] != '0':
             self.current_purpose = purpose_options[user_choices[0]]
 
+        # *「上一轮不为空意图场景」or「当前轮获取到非0的意图场景」时*
         if self.current_purpose:
             print(f"用户选择了场景：{self.scene_templates[self.current_purpose]['name']}")
             # 这里可以继续处理其他逻辑
         else:
-            # 用户输入的选项无效的情况，可以进行相应的处理
+            # *「上一轮意图场景为空」or「当前轮用户获取对应0的意图场景」*
             print("无效的选项，请重新选择")
 
     def get_processor_for_scene(self, scene_name):
@@ -80,14 +82,14 @@ class ChatbotModel:
         :param user_input:
         :return:
         """
-        # 检查当前输入是否与上一次的意图场景相关
+        # 检查当前输入是否与上一轮的意图场景相关
         if self.is_related_to_last_intent(user_input):
             pass
         else:
             # 不相关时，重新识别意图
             self.recognize_intent(user_input)
-        logging.info('current_purpose: %s', self.current_purpose)
 
+        logging.info('current_purpose: %s', self.current_purpose)
         if self.current_purpose in self.scene_templates:
             # 根据场景模板调用相应场景的处理逻辑
             self.get_processor_for_scene(self.current_purpose)
